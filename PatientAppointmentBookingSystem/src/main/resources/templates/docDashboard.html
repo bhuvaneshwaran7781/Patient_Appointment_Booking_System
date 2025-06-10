@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://ThymeLeaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Doctor Dashboard - Kodiyugam Hospital</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    body {
+      background: linear-gradient(135deg, #66ccff, #ff99cc);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+ 
+    .hospital-name {
+      font-size: 36px;
+      font-weight: bold;
+      color: #004085;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+ 
+    .dashboard-layout {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      width: 100%;
+      max-width: 1100px;
+    }
+ 
+    .tab-nav {
+      flex: 0 0 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+ 
+    .tab-nav .nav-link {
+      border-radius: 8px;
+      background-color: white;
+      color: #004085;
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+ 
+    .tab-nav .nav-link.active {
+      background-color: #004085;
+      color: white;
+    }
+ 
+    .tab-content-area {
+      flex: 2;
+      max-width: 700px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      overflow-y: auto;
+    }
+ 
+ .table th {
+      background-color: #004085;
+      color: white;
+      text-align: center;
+    }
+    .list-group-item {
+      border: none;
+      padding-left: 0;
+    }
+ 	.dropdown-menu {
+      min-width: 250px;
+    }
+    .dropdown-menu {
+		  background: linear-gradient(135deg, #e0f7fa, #e1bee7); /* Soft blue to lavender */
+		  border: none;
+		  border-radius: 12px;
+		  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		}
+ 
+		.dropdown-item {
+		  color: #3e3e3e;
+		  font-weight: 500;
+		  border-radius: 6px;
+		  transition: background 0.3s ease;
+		}
+ 
+		.dropdown-item:hover {
+		  background-color: rgba(255, 255, 255, 0.5);
+		  color: #1a237e;
+		}
+ 
+		.dropdown-divider {
+		  border-top: 1px solid rgba(0, 0, 0, 0.1);
+		}
+    .btn-primary {
+      background: linear-gradient(135deg, #0066cc, #004085);
+      border: none;
+    }
+ 
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #004085, #002655);
+    }
+</style>
+</head>
+<body>
+ 
+  <div class="hospital-name">Kodiyugam Hospital</div>
+ <!-- Profile Icon Dropdown -->
+<div class="position-absolute top-0 end-0 p-3">
+  <div class="dropdown">
+    <button class="btn btn-outline-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile" width="30" height="30" class="rounded-circle">
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+      <li class="dropdown-item"><strong>Name:</strong> <span th:text="${session.doctorLogged.name}"></span></li>
+      <li class="dropdown-item"><strong>ID:</strong> <span th:text="${session.doctorLogged.id}"></span></li>
+      <li class="dropdown-item"><strong>Email:</strong> <span th:text="${session.doctorLogged.email}"></span></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a th:href="@{/loginpage}" class="dropdown-item text-danger">Logout</a></li>
+    </ul>
+  </div>
+</div>
+  <div class="dashboard-layout">
+<!-- Navigation -->
+<div class="tab-nav nav flex-column nav-tabs" id="doctorTabs" role="tablist">
+<a class="nav-link active" data-bs-toggle="tab" href="#bookings">Appointment Requests</a>
+
+<a class="nav-link" data-bs-toggle="tab" href="#completed">Completed</a>
+</div>
+ 
+    <!-- Content -->
+<div class="tab-content-area tab-content">
+
+
+<!-- Appointment Requests in Table Format -->
+<div class="tab-pane fade show active" id="bookings">
+  <h4>Appointment Requests</h4>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Patient ID</th>
+          <th>Patient Name</th>
+          <th>Appointment Date</th>
+          <th>Appointment Time</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="appointment : ${appointmentrequests}">
+          <td th:text="${appointment.patientid}"></td>
+          <td th:text="${appointment.patient_name}"></td>
+          <td th:text="${appointment.date}"></td>
+          <td th:text="${appointment.time}"></td>
+          <td>
+            <a th:href="@{/doctor/complete/{id}(id=${appointment.appointmentId})}" class="btn btn-success btn-sm">
+              Mark as Complete
+            </a>
+     
+            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- Completed Appointments in Table Format --> 
+<div class="tab-pane fade" id="completed"> 
+<h4>Completed Appointments</h4> 
+<div class="table-responsive"> 
+<table class="table table-bordered table-striped">
+ <thead class="table-dark"> 
+ <tr>
+  <th>Patient ID</th>
+   <th>Patient Name</th> 
+   <th>Appointment Date</th>
+    <th>Appointment Time</th> 
+    <th>Status</th>
+     </tr> 
+     </thead> 
+     <tbody> 
+     <tr th:each="completedAppointment : ${session.AppoCompleted}"> 
+     <td th:text="${completedAppointment.patientid}"></td> 
+     <td th:text="${completedAppointment.patient_name}"></td>
+      <td th:text="${completedAppointment.date}"></td>
+       <td th:text="${completedAppointment.time}"></td> 
+       <td> <span class="badge bg-success">Completed</span> </td>
+        </tr>
+         </tbody>
+          </table>
+     </div> 
+   
+          
+</div>
+</div>
+ 
+</body>
+</html>

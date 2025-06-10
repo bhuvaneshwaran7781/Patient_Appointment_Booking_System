@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://ThymeLeaf.org" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doctor Register</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    body {
+        background: linear-gradient(135deg, #66ccff, #ff99cc);
+        display: flex;
+        flex-direction: column; /* Align hospital name */
+        align-items: center;
+        height: 100vh; /* Full height */
+        padding: 0 8vw;
+    }
+    .hospital-name {
+        font-size: 36px;
+        font-weight: bold;
+        color: #004085;
+        text-align: center;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+        margin-bottom: 20px;
+    }
+    .content-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 30px; /* Space between image and form */
+        width: 100%;
+        justify-content: center; /* Center the content horizontally */
+    }
+    .image-container {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+    }
+    .image-container img {
+        width: 100%;
+        max-width: 350px; /* Slightly smaller for balance */
+        height: auto;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+    .doctor-container {
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.9); /* Slight transparency for blending */
+        border-radius: 20px; /* Curved edges */
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+        max-width: 450px;
+        width: 100%;
+        max-height: 80vh; /* Make it scrollable */
+        overflow-y: auto; /* Enables vertical scrolling */
+    }
+    .form-label {
+        font-weight: bold;
+        color: #004085;
+    }
+    .form-control {
+        border: 1px solid #66ccff;
+        box-shadow: inset 0px 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #0066cc, #004085);
+        border: none;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #004085, #002655);
+    }
+    .text-danger {
+    color: #dc3545; /* Bootstrap's default red */
+    font-size: 0.875em; /* Slightly smaller than regular text */
+    margin-top: 0.25rem; /* A little space above */
+    display: block; /* Ensures it takes its own line below the input */
+}
+</style>
+</head>
+<body>
+ 
+<!-- Hospital Name -->
+<div class="hospital-name">Kodiyugam Hospital</div>
+ 
+<!-- Content Wrapper (Image + Scrollable Form) -->
+<div class="content-wrapper">
+    <!-- Portrait Image Section -->
+    <div class="image-container">
+        <img th:src="@{/images/DoctorRegister_image.jpg}" alt="Doctor Portrait" class="img-fluid">
+    </div>
+ 
+    <!-- Doctor Registration Form -->
+    <div class="doctor-container">
+    <h2 class="text-center mb-3">Doctor Profile Setup</h2>
+    <form th:action="@{/doctor/savedoctor}" th:object="${doctor}" method="post">
+    <div class="mb-2">
+    <label class="form-label">Doctor Name</label>
+    <input type="text" class="form-control" name="name" th:field="*{name}" placeholder="Enter name" required>
+    <p class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+    </div>
+    <div class="mb-2">
+    <label class="form-label">Specialization</label>
+    <select class="form-select" name="specialization" th:field="*{specialization}" required>
+    <option value="" disabled selected>Select Specialization</option>
+    <option value="Cardiologist">Cardiologist</option>
+    <option value="Neurologist">Neurologist</option>
+    <option value="Dermatologist">Dermatologist</option>
+    <option value="Orthopedic">Orthopedic</option>
+    <option value="Pediatrician">Pediatrician</option>
+    </select>
+    <p class="text-danger" th:if="${#fields.hasErrors('specialization')}" th:errors="*{specialization}"></p>
+    </div>
+    <div class="mb-2">
+    <label class="form-label">Phone</label>
+    <input type="tel" class="form-control" name="phone" placeholder="Enter phone" th:field="*{phone}" required>
+    <p class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+    </div>
+    <div class="mb-2">
+    <label class="form-label">Email</label>
+    <input type="email" class="form-control" name="email" placeholder="Enter email" th:field="*{email}" required>
+    <p class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+    </div>
+    <div class="mb-2">
+    <label class="form-label">Password</label>
+    <input type="password" class="form-control" name="password" placeholder="Create password" th:field="*{password}" required>
+    <p class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+    </div>
+    <div class="mb-2">
+    <label class="form-label">Confirm Password</label>
+    <input type="password" class="form-control" name="confirmpassword" placeholder="Confirm password" required>
+    </div>
+    <div th:if="${errorMessage}" class="text-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+    <button type="submit" class="btn btn-primary w-100 mt-2">Add Doctor</button>
+    </form>
+    </div>
+</div>
+ 
+</body>
+</html>
+ 
+ 

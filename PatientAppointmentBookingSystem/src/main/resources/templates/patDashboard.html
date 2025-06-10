@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns:th="http://ThymeLeaf.org" lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Patient Dashboard - Kodiyugam Hospital</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    body {
+      background: linear-gradient(135deg, #66ccff, #ff99cc);
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+ 
+    .hospital-name {
+      font-size: 36px;
+      font-weight: bold;
+      color: #004085;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      margin-top: 20px;
+    }
+ 
+    .dashboard-layout {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      padding: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+ 
+    .tab-nav {
+      flex: 0 0 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+ 
+    .tab-nav .nav-link {
+      border-radius: 8px;
+      background-color: white;
+      color: #004085;
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+ 
+    .tab-nav .nav-link.active {
+      background-color: #004085;
+      color: white;
+    }
+ 
+    .tab-content-area {
+      flex: 2;
+      max-width: 600px;
+      height: 80%;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      overflow-y: auto;
+    }
+ 
+    .table-container {
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 10px;
+    }
+ 
+    .table {
+      width: 100%;
+      border-radius: 8px;
+    }
+ 
+    .table th {
+      background-color: #004085;
+      color: white;
+      text-align: center;
+    }
+	.dropdown-menu {
+      min-width: 250px;
+    }
+    .dropdown-menu {
+		  background: linear-gradient(135deg, #e0f7fa, #e1bee7); /* Soft blue to lavender */
+		  border: none;
+		  border-radius: 12px;
+		  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		}
+ 
+		.dropdown-item {
+		  color: #3e3e3e;
+		  font-weight: 500;
+		  border-radius: 6px;
+		  transition: background 0.3s ease;
+		}
+ 
+		.dropdown-item:hover {
+		  background-color: rgba(255, 255, 255, 0.5);
+		  color: #1a237e;
+		}
+ 
+		.dropdown-divider {
+		  border-top: 1px solid rgba(0, 0, 0, 0.1);
+		}
+    .table td {
+      text-align: center;
+    }
+</style>
+</head>
+<body>
+ 
+<!-- Hospital Name -->
+<div class="hospital-name">Kodiyugam Hospital</div>
+<!-- Profile Icon Dropdown -->
+<div class="position-absolute top-0 end-0 p-3">
+  <div class="dropdown">
+    <button class="btn btn-outline-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile" width="30" height="30" class="rounded-circle">
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+      <li class="dropdown-item"><strong>Name:</strong> <span th:text="${session.patLogged.name}"></span></li>
+      <li class="dropdown-item"><strong>ID:</strong> <span th:text="${session.patLogged.id}"></span></li>
+      <li class="dropdown-item"><strong>Email:</strong> <span th:text="${session.patLogged.email}"></span></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a th:href="@{/loginpage}" class="dropdown-item text-danger">Logout</a></li>
+    </ul>
+  </div>
+</div>
+ 
+<!-- Dashboard Layout -->
+<div class="dashboard-layout">
+  <!-- Tabs Navigation (Left Side) -->
+  <div class="tab-nav nav flex-column nav-tabs" id="dashboardTabs" role="tablist">
+    <a class="nav-link active" id="book-tab" data-bs-toggle="tab" href="#book" role="tab">Book</a>
+    
+    <a class="nav-link" id="upcoming-tab" data-bs-toggle="tab" href="#upcoming" role="tab">Upcoming</a>
+    <a class="nav-link" id="completed-tab" data-bs-toggle="tab" href="#completed" role="tab">Completed</a>
+  </div>
+ 
+  <!-- Tab Content Area (Right Side) -->
+  <div class="tab-content-area tab-content" id="dashboardTabsContent">
+ 
+    <!-- Book Appointment -->
+    <div class="tab-pane fade show active" id="book">
+      <h4>Book an Appointment</h4>
+      <form th:action="@{/appointment/patientBooking}" method="post">
+        <div class="mb-2">
+          <label class="form-label">Select Doctor</label>
+          <select class="form-select" name="doctorselected" required>
+    
+            <option value="" disabled selected>Select a doctor</option>
+            <option th:each="doctor: ${session.doctors}" 
+                    th:value="${doctor.name}"
+            th:text="${doctor.name + ' - ' + doctor.specialization + ' (' + doctor.phone + ')'}"></option>     
+</select>
+
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Select Date</label>
+          <input type="date" class="form-control" name="appointment_date" id="appointmentDate" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Select Time Slot</label>
+          <select class="form-select" name="appointment_time" required>
+            <option value="" disabled selected>Select a time slot</option>
+            <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+            <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+            <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
+            <option value="2:00 PM - 2:30 PM">2:00 PM - 2:30 PM</option>
+            <option value="2:30 PM - 3:00 PM">2:30 PM - 3:00 PM</option>
+          </select>
+		  
+        </div>
+		<div th:if="${errorMessage}" class="text-danger">
+				          <p th:text="${errorMessage}"></p>
+				      </div>
+        <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
+      </form>
+    </div>
+ 
+ 
+    <!-- Upcoming Appointments -->
+    <div class="tab-pane fade" id="upcoming">
+      <h4>Upcoming Appointments</h4>
+      <div class="table-container">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Date</th>
+              <th>Time Slot</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="appo : ${session.upcomingappointments}">
+          <td th:text="${appo.doctor_name}"></td>
+          <td th:text="${appo.date}"></td>
+          <td th:text="${appo.time}"></td>
+		  <td>
+		    <div class="d-flex justify-content-center gap-1">
+		      <form th:action="@{/appointment/reschedule/{appointmentId}(appointmentId=${appo.appointmentId})}" method="post" class="m-0">
+		        <input type="hidden" name="doctor" th:value="${appo.doctor_name}" />
+		        <input type="hidden" name="appointment_date" th:value="${appo.date}" />
+		        <input type="hidden" name="appointment_time" th:value="${appo.time}" />
+		       <button type="button" class="btn btn-warning btn-sm px-2" data-bs-toggle="modal" 
+                    th:data-bs-target="'#rescheduleModal__' + ${appo.appointmentId}">Reschedule</button>
+
+		      </form>
+		      
+		      <form th:action="@{/appointment/cancel/{appointmentId}(appointmentId=${appo.appointmentId})}"  class="m-0">
+		        <input type="hidden" name="doctor" th:value="${appo.doctor_name}" />
+		        <input type="hidden" name="appointment_date" th:value="${appo.date}" />
+		        <input type="hidden" name="appointment_time" th:value="${appo.time}" />
+		        <button type="submit" class="btn btn-danger btn-sm px-2">cancel</button>
+		      </form>
+		    </div>
+		  </td>
+        </tr>  
+          </tbody>
+        </table>
+      </div>
+    </div>
+		      
+ 
+		  
+  <!-- Reschedule Modal -->
+
+  <div class="modal fade" th:id="'rescheduleModal__' + ${appo.appointmentId}" tabindex="-1" th:each="appo:${session.upcomingappointments}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/appointment/reschedule/{appointmentId}(appointmentId=${appo.appointmentId})}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reschedule Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="appointmentId" th:value="${appo.appointmentId}" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Doctor</label>
+                        <select class="form-select" name="doctorselected" required>
+                            <option th:each="doctor : ${session.doctors}" th:value="${doctor.name}"
+                                    th:text="${doctor.name + ' - ' + doctor.specialization + ' (' + doctor.phone + ')'}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Date</label>
+                        <input type="date" class="form-control" name="appointment_date" id="appointmentDate" th:value="${appo.date}" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Time Slot</label>
+                        <select class="form-select" name="appointment_time" required>
+                            <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+                            <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+                            <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
+                            <option value="2:00 PM - 2:30 PM">2:00 PM - 2:30 PM</option>
+                            <option value="2:30 PM - 3:00 PM">2:30 PM - 3:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm Reschedule</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 
+    <!-- Completed Appointments -->
+    <div class="tab-pane fade" id="completed">
+      <h4>Completed Appointments</h4>
+      <div class="table-container">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="completedAppointment : ${session.completedAppointments}"> 
+     <td th:text="${completedAppointment.doctor_name}"></td> 
+      <td th:text="${completedAppointment.date}"></td>
+      <td> <span class="badge bg-success">Completed</span> </td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  document.getElementById("reconfirmBtn").addEventListener("click", function () {
+    document.getElementById("rescheduleForm").submit();
+    var rescheduleModal = new bootstrap.Modal(document.getElementById("rescheduleModal"));
+    rescheduleModal.hide();
+  });
+</script>
+
+  
+
+<!--<script >
+  document.addEventListener("DOMContentLoaded", function() {
+	    const dateInput = document.getElementById("appointmentDate");
+	    const today = new Date().toISOString().split("T")[0];
+	    
+	    dateInput.setAttribute("min", today);
+ 
+	    dateInput.addEventListener("input", function() {
+	      if (dateInput.value < today) {
+	        dateInput.value = today; // Reset to today if an invalid date is selected
+	      }
+	    });
+	  });
+ 
+	  
+	  
+  
+</script>-->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const today = new Date().toISOString().split("T")[0];
+ 
+    document.querySelectorAll("input[type='date']").forEach(dateInput => {
+      dateInput.setAttribute("min", today);
+      dateInput.addEventListener("input", function() {
+        if (dateInput.value < today) {
+          dateInput.value = today;
+        }
+      });
+    });
+ 
+    // Apply validation when modal opens
+    document.querySelectorAll(".modal").forEach(modal => {
+      modal.addEventListener("shown.bs.modal", function() {
+        const modalDateInput = modal.querySelector("input[type='date']");
+        if (modalDateInput) {
+          modalDateInput.setAttribute("min", today);
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+
+
+</html>
+ 
+ 
